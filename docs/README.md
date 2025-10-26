@@ -14,6 +14,7 @@ This documentation provides comprehensive guidance for setting up, deploying, an
 Start here to get up and running quickly:
 - **[Quick Start Guide](getting-started/quick-start.md)** - Get running in 3 commands
 - **[Installation Guide](getting-started/installation.md)** - Detailed setup instructions
+- **[CLI Reference](CLI.md)** - Command-line interface guide
 - **[Configuration Guide](getting-started/configuration.md)** - Environment setup
 
 ### For System Understanding

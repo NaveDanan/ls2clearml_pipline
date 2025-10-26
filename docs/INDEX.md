@@ -10,6 +10,7 @@ Essential guides for new users:
 |----------|-------------|------|------------|
 | [Quick Start](getting-started/quick-start.md) | Get running in 3 commands | 10 min | ⭐ Easy |
 | [Installation](getting-started/installation.md) | Detailed setup instructions | 30 min | ⭐⭐ Moderate |
+| [CLI Reference](CLI.md) | Command-line interface | 15 min | ⭐ Easy |
 | [Configuration](getting-started/configuration.md) | Environment configuration | 15 min | ⭐ Easy |
 
 ## 🏗️ Architecture

@@ -8,10 +8,62 @@ A production-ready pipeline for image annotation with Label Studio integrated wi
 
 ### Quick Links
 - **[Quick Start Guide](docs/getting-started/quick-start.md)** - Get running in 3 commands
+- **[CLI Reference](docs/CLI.md)** - Command-line interface
 - **[Installation Guide](docs/getting-started/installation.md)** - Detailed setup
 - **[Batch Annotations Guide](docs/guides/batch-annotations.md)** - Using batch processing
 - **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues
 - **[Documentation Index](docs/INDEX.md)** - Complete documentation map
+
+## 🚀 Quick Start
+
+### 1. Start Services
+```powershell
+# Start Label Studio & PostgreSQL
+docker-compose up -d
+```
+
+### 2. Setup Pipeline
+```powershell
+# Configure Label Studio project and webhooks
+uv run .\main.py setup
+```
+
+### 3. Start Webhook Server
+```powershell
+# Start the batch processing webhook server
+uv run .\main.py webhook
+```
+
+### 4. Start Dashboard (Optional)
+```powershell
+# In new terminal
+cd frontend
+pnpm run dev
+# Open http://localhost:3000
+```
+
+### Access Services
+- **Label Studio**: http://localhost:8090
+- **Dashboard**: http://localhost:3000
+- **ClearML**: https://app.clear.ml
+
+## 💻 CLI Commands
+
+```powershell
+# Setup the pipeline
+uv run .\main.py setup
+
+# Start webhook server
+uv run .\main.py webhook
+
+# Run ClearML training pipeline
+uv run .\main.py run
+
+# Show help
+uv run .\main.py --help
+```
+
+See [CLI Reference](docs/CLI.md) for complete documentation.
 
 ## ✨ Key Features
 
