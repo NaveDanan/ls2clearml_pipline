@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     clearml_project_name: str = Field(default="ImageAnnotation", env="CLEARML_PROJECT_NAME")
     clearml_dataset_name: str = Field(default="AnnotatedImages", env="CLEARML_DATASET_NAME")
     
+    # Shared Data Directory (mounted in Label Studio container)
+    shared_data_dir: Path = Field(default=Path("./shared-data"), env="SHARED_DATA_DIR")
+    
     # Local paths
     data_dir: Path = Field(default=Path("./data"))
     temp_dir: Path = Field(default=Path("./temp"))
@@ -52,6 +55,7 @@ class Settings(BaseSettings):
         # Create directories if they don't exist
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.temp_dir.mkdir(parents=True, exist_ok=True)
+        self.shared_data_dir.mkdir(parents=True, exist_ok=True)
     
     @property
     def postgres_url(self) -> str:

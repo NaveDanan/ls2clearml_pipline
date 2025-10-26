@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Palette */
+  --charcoal: 214 11% 26%;   /* #3B4149 */
+  --platinum: 240 2% 91%;    /* #E8E8E9 */
+  --verdigris: 183 95% 36%;  /* #05ABB3 */
+  --dark-cyan: 184 61% 38%;  /* #26949C */
+
+  /* Dark (default) */
+  --background: 214 11% 20%;      /* darker charcoal */
+  --foreground: var(--platinum);
+  --card: 214 11% 24%;
+  --card-foreground: var(--platinum);
+  --popover: 214 11% 24%;
+  --popover-foreground: var(--platinum);
+  --primary: var(--verdigris);
+  --primary-foreground: 214 11% 20%;
+  --secondary: 214 11% 18%;
+  --secondary-foreground: var(--platinum);
+  --muted: 214 8% 70%;
+  --muted-foreground: 214 8% 70%;
+  --accent: var(--dark-cyan);
+  --accent-foreground: var(--platinum);
+  --destructive: 0 84% 60%;
+  --destructive-foreground: var(--platinum);
+  --border: 214 11% 18%;
+  --input: 214 11% 18%;
+  --ring: var(--verdigris);
+  --radius: 0.7rem;
+}
+
+.light {
+  --background: var(--platinum);
+  --foreground: 214 11% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 214 11% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 214 11% 18%;
+  --primary: var(--verdigris);
+  --primary-foreground: 214 11% 18%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 214 11% 18%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 214 10% 42%;
+  --accent: var(--dark-cyan);
+  --accent-foreground: 214 11% 18%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 20% 88%;
+  --input: 214 20% 88%;
+  --ring: var(--verdigris);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+
+.font-ui-serif {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1536px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Monospace font stacks */
+code, kbd, samp, pre { 
+  font-family: "Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace; 
+}

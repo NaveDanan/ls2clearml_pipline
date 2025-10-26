@@ -9,3 +9,13 @@ wheels/
 # Virtual environments
 .venv
 .env
+
+# Data directories
+data/
+temp/
+shared-data/
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/

@@ -47,8 +47,18 @@ def setup_label_studio_project():
         
         # Check if project exists
         projects = ls_client.get_projects()
-        project = None
         
+        # Debug: Check what we got back
+        if isinstance(projects, str):
+            logger.error(f"✗ Label Studio returned a string instead of JSON: {projects[:200]}")
+            logger.info("\nThis usually means Label Studio is not running or not properly configured.")
+            return None
+        
+        if not isinstance(projects, list):
+            logger.error(f"✗ Unexpected response type: {type(projects)}")
+            return None
+        
+        project = None
         for proj in projects:
             if proj['title'] == settings.clearml_project_name:
                 project = proj
@@ -62,7 +72,7 @@ def setup_label_studio_project():
         
         return project
     except Exception as e:
-        logger.error(f"✗ Label Studio setup failed: {e}")
+        logger.error(f"✗ Label Studio setup failed: {e}", exc_info=True)
         logger.info("\nPlease ensure:")
         logger.info("1. Label Studio is running (docker-compose up -d)")
         logger.info("2. LABEL_STUDIO_API_KEY is set in .env file")

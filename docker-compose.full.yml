@@ -1,0 +1,195 @@
+services:
+  # ==========================================
+  # LABEL STUDIO STACK
+  # ==========================================
+  
+  postgres:
+    image: postgres:15-alpine
+    container_name: labelstudio-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-labelstudio}
+      POSTGRES_USER: ${POSTGRES_USER:-labelstudio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-labelstudio}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labelstudio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shared_network
+
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio
+    environment:
+      DJANGO_DB: default
+      POSTGRE_NAME: ${POSTGRES_DB:-labelstudio}
+      POSTGRE_USER: ${POSTGRES_USER:-labelstudio}
+      POSTGRE_PASSWORD: ${POSTGRES_PASSWORD:-labelstudio}
+      POSTGRE_PORT: 5432
+      POSTGRE_HOST: postgres
+      LABEL_STUDIO_HOST: ${LABEL_STUDIO_HOST:-http://localhost:8090}
+      # Configure Label Studio to use the shared volume
+      LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED: true
+      LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT: /shared-data
+    ports:
+      - "8090:8080"
+    volumes:
+      - label_studio_data:/label-studio/data
+      # Shared volume accessible by both Label Studio and ClearML
+      - ./shared-data:/shared-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shared_network
+
+  # ==========================================
+  # CLEARML STACK
+  # ==========================================
+
+  clearml-apiserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-apiserver
+    restart: unless-stopped
+    environment:
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+      CLEARML_WEB_HOST: ${CLEARML_WEB_HOST:-http://localhost:8080}
+      CLEARML_API_HOST: ${CLEARML_API_HOST:-http://localhost:8008}
+      CLEARML_FILES_HOST: ${CLEARML_FILES_HOST:-http://localhost:8081}
+      CLEARML_API_DEFAULT_COMPANY: ${CLEARML_DEFAULT_COMPANY:-clearml}
+      # MongoDB settings
+      CLEARML_MONGODB_SERVICE_HOST: clearml-mongo
+      CLEARML_MONGODB_SERVICE_PORT: 27017
+      # Elastic settings
+      CLEARML_ELASTIC_SERVICE_HOST: clearml-elasticsearch
+      CLEARML_ELASTIC_SERVICE_PORT: 9200
+      # Redis settings
+      CLEARML_REDIS_SERVICE_HOST: clearml-redis
+      CLEARML_REDIS_SERVICE_PORT: 6379
+    command:
+      - apiserver
+    volumes:
+      - clearml_logs:/var/log/clearml
+      - clearml_config:/opt/clearml/config
+      # Shared volume with Label Studio
+      - ./shared-data:/shared-data
+    ports:
+      - "8008:8008"
+    depends_on:
+      - clearml-mongo
+      - clearml-elasticsearch
+      - clearml-redis
+    networks:
+      - shared_network
+
+  clearml-webserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-webserver
+    restart: unless-stopped
+    environment:
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+      CLEARML_WEB_HOST: ${CLEARML_WEB_HOST:-http://localhost:8080}
+      CLEARML_API_HOST: ${CLEARML_API_HOST:-http://localhost:8008}
+      CLEARML_FILES_HOST: ${CLEARML_FILES_HOST:-http://localhost:8081}
+    command:
+      - webserver
+    ports:
+      - "8080:80"
+    depends_on:
+      - clearml-apiserver
+    networks:
+      - shared_network
+
+  clearml-fileserver:
+    image: allegroai/clearml:latest
+    container_name: clearml-fileserver
+    restart: unless-stopped
+    environment:
+      CLEARML_HOST_IP: ${CLEARML_HOST_IP:-localhost}
+    command:
+      - fileserver
+    volumes:
+      - clearml_fileserver:/mnt/fileserver
+      # Shared volume with Label Studio
+      - ./shared-data:/shared-data
+    ports:
+      - "8081:8081"
+    networks:
+      - shared_network
+
+  clearml-mongo:
+    image: mongo:4.4
+    container_name: clearml-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-clearml123}
+    volumes:
+      - mongo_data:/data/db
+      - mongo_configdb:/data/configdb
+    ports:
+      - "27017:27017"
+    networks:
+      - shared_network
+
+  clearml-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: clearml-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - cluster.name=clearml
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - shared_network
+
+  clearml-redis:
+    image: redis:7-alpine
+    container_name: clearml-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - shared_network
+
+volumes:
+  # Label Studio volumes
+  postgres_data:
+  label_studio_data:
+  
+  # ClearML volumes
+  mongo_data:
+  mongo_configdb:
+  elasticsearch_data:
+  redis_data:
+  clearml_logs:
+  clearml_config:
+  clearml_fileserver:
+
+networks:
+  shared_network:
+    driver: bridge

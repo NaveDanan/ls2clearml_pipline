@@ -13,11 +13,17 @@ dependencies = [
     "fastapi>=0.120.0",
     "label-studio-sdk>=1.0.0",
     "uvicorn>=0.30.0",
+    "uvicorn[standard]>=0.30.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
     "requests>=2.31.0",
     "python-dotenv>=1.0.0",
     "psycopg2-binary>=2.9.9",
+    "websockets>=12.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "aiofiles>=23.0.0",
+    "httpx>=0.25.0",
 ]
 
 [tool.setuptools]
@@ -25,8 +31,12 @@ py-modules = [
     "main",
     "config",
     "label_studio_client",
+    "async_label_studio_client",
     "clearml_manager",
     "webhook_server",
+    "webhook_server_optimized",
+    "task_queue",
+    "annotation_batch_manager",
     "setup_pipeline",
     "run_pipeline",
     "example_training"

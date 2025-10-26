@@ -28,11 +28,16 @@ services:
       POSTGRE_PASSWORD: ${POSTGRES_PASSWORD:-labelstudio}
       POSTGRE_PORT: 5432
       POSTGRE_HOST: postgres
-      LABEL_STUDIO_HOST: ${LABEL_STUDIO_HOST:-http://localhost:8080}
+      LABEL_STUDIO_HOST: ${LABEL_STUDIO_HOST:-http://localhost:8090}
+      # Configure Label Studio to use the shared volume
+      LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED: true
+      LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT: /shared-data
     ports:
-      - "8080:8080"
+      - "8090:8080"  # Changed from 8080 to 8090 to avoid conflict with ClearML
     volumes:
       - label_studio_data:/label-studio/data
+      # Shared volume for uploaded files - accessible from host and ClearML
+      - ./shared-data:/shared-data
     depends_on:
       postgres:
         condition: service_healthy

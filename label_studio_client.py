@@ -32,7 +32,11 @@ class LabelStudioClient:
     def get_projects(self) -> List[Dict[str, Any]]:
         """Get all projects"""
         response = self._make_request("GET", "projects/")
-        return response.json()
+        data = response.json()
+        # Label Studio returns paginated results
+        if isinstance(data, dict) and 'results' in data:
+            return data['results']
+        return data
     
     def get_project(self, project_id: int) -> Dict[str, Any]:
         """Get project by ID"""

@@ -62,13 +62,49 @@ class ClearMLManager:
             try:
                 image_url = annotation.get('data', {}).get('image')
                 if image_url:
-                    # Add external files (images) to dataset
-                    dataset.add_external_files(
-                        source_url=image_url,
-                        dataset_path=f"images/{Path(image_url).name}"
-                    )
+                    # Handle different image path formats
+                    local_image_path = None
+                    
+                    # Case 1: Internal Docker path like /data/upload/1/filename.png
+                    if image_url.startswith('/data/upload/'):
+                        # Map to shared volume: /data/upload/1/file.png -> ./shared-data/upload/1/file.png
+                        relative_path = image_url.replace('/data/', '')
+                        local_image_path = settings.shared_data_dir / relative_path
+                        logger.info(f"Mapped Docker path {image_url} to local path {local_image_path}")
+                    
+                    # Case 2: Shared data path like /shared-data/upload/1/filename.png
+                    elif image_url.startswith('/shared-data/'):
+                        relative_path = image_url.replace('/shared-data/', '')
+                        local_image_path = settings.shared_data_dir / relative_path
+                        logger.info(f"Mapped shared path {image_url} to local path {local_image_path}")
+                    
+                    # Case 3: Already a local path or HTTP URL
+                    elif image_url.startswith('http://') or image_url.startswith('https://'):
+                        # Fallback to HTTP download (old behavior)
+                        logger.info(f"Adding image from URL: {image_url}")
+                        dataset.add_external_files(
+                            source_url=image_url,
+                            dataset_path=f"images/{Path(image_url).name}"
+                        )
+                        continue
+                    else:
+                        # Assume it's already a local path
+                        local_image_path = Path(image_url)
+                    
+                    # Add local file to dataset
+                    if local_image_path and local_image_path.exists():
+                        logger.info(f"Adding local image: {local_image_path}")
+                        dataset.add_files(
+                            path=str(local_image_path),
+                            dataset_path=f"images/{local_image_path.name}"
+                        )
+                    else:
+                        logger.warning(f"Image file not found: {local_image_path}")
+                        
             except Exception as e:
-                logger.error(f"Error adding image {image_url}: {e}")
+                logger.warning(f"Could not add image {image_url}: {e}")
+                # Continue processing other images even if one fails
+                continue
         
         # Add metadata
         dataset.get_logger().report_text(
