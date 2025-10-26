@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 import logging
 
-from config import settings
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 

@@ -5,8 +5,8 @@ import logging
 import argparse
 from pathlib import Path
 
-from clearml_manager import ClearMLManager
-from config import settings
+from clients.clearml_manager import ClearMLManager
+from core.config import settings
 
 logging.basicConfig(
     level=logging.INFO,

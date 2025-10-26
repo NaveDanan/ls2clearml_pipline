@@ -5,9 +5,9 @@ import logging
 import sys
 from pathlib import Path
 
-from config import settings
-from label_studio_client import LabelStudioClient
-from clearml_manager import ClearMLManager
+from core.config import settings
+from clients.label_studio_client import LabelStudioClient
+from clients.clearml_manager import ClearMLManager
 
 logging.basicConfig(
     level=logging.INFO,

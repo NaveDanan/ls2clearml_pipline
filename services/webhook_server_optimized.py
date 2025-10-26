@@ -14,11 +14,11 @@ from datetime import datetime
 import json
 from pathlib import Path
 
-from config import settings
-from async_label_studio_client import AsyncLabelStudioClient
-from clearml_manager import ClearMLManager
-from task_queue import get_task_queue, TaskQueueManager
-from annotation_batch_manager import AnnotationBatchManager
+from core.config import settings
+from clients.async_label_studio_client import AsyncLabelStudioClient
+from clients.clearml_manager import ClearMLManager
+from services.task_queue import get_task_queue, TaskQueueManager
+from services.annotation_batch_manager import AnnotationBatchManager
 
 logging.basicConfig(
     level=logging.INFO,

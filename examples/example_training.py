@@ -8,7 +8,7 @@ import json
 from typing import Dict, Any
 
 from clearml import Task, Dataset
-from config import settings
+from core.config import settings
 
 logging.basicConfig(
     level=logging.INFO,

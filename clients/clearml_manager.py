@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 
 from clearml import Dataset, Task, PipelineController
-from config import settings
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 

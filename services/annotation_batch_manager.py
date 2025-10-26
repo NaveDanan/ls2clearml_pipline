@@ -10,8 +10,8 @@ from pathlib import Path
 import json
 from collections import defaultdict
 
-from config import settings
-from clearml_manager import ClearMLManager
+from core.config import settings
+from clients.clearml_manager import ClearMLManager
 
 logger = logging.getLogger(__name__)
 

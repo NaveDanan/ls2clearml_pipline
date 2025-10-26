@@ -4,9 +4,9 @@ Main entry point for Label Studio to ClearML Pipeline
 import argparse
 import logging
 
-from webhook_server import run_server
-from setup_pipeline import main as setup_main
-from run_pipeline import run_pipeline
+from services.webhook_server_optimized import main as run_server
+from pipelines.setup_pipeline import main as setup_main
+from pipelines.run_pipeline import run_pipeline
 
 logging.basicConfig(
     level=logging.INFO,

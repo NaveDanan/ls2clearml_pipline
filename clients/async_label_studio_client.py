@@ -4,7 +4,7 @@ Async Label Studio client for concurrent API operations
 import logging
 from typing import List, Dict, Any, Optional
 import httpx
-from config import settings
+from core.config import settings
 
 logger = logging.getLogger(__name__)
 
