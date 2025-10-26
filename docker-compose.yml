@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: labelstudio-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-labelstudio}
+      POSTGRES_USER: ${POSTGRES_USER:-labelstudio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-labelstudio}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-labelstudio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ls_network
+
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio
+    environment:
+      DJANGO_DB: default
+      POSTGRE_NAME: ${POSTGRES_DB:-labelstudio}
+      POSTGRE_USER: ${POSTGRES_USER:-labelstudio}
+      POSTGRE_PASSWORD: ${POSTGRES_PASSWORD:-labelstudio}
+      POSTGRE_PORT: 5432
+      POSTGRE_HOST: postgres
+      LABEL_STUDIO_HOST: ${LABEL_STUDIO_HOST:-http://localhost:8080}
+    ports:
+      - "8080:8080"
+    volumes:
+      - label_studio_data:/label-studio/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ls_network
+
+volumes:
+  postgres_data:
+  label_studio_data:
+
+networks:
+  ls_network:
+    driver: bridge

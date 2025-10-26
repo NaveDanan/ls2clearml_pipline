@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ls2clearml-pipline"
+version = "0.1.0"
+description = "Label Studio to ClearML pipeline for image annotation and ML experiment management"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "clearml>=2.0.2",
+    "fastapi>=0.120.0",
+    "label-studio-sdk>=1.0.0",
+    "uvicorn>=0.30.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "psycopg2-binary>=2.9.9",
+]
+
+[tool.setuptools]
+py-modules = [
+    "main",
+    "config",
+    "label_studio_client",
+    "clearml_manager",
+    "webhook_server",
+    "setup_pipeline",
+    "run_pipeline",
+    "example_training"
+]
