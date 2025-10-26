@@ -159,30 +159,80 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    const websocket = connectWebSocket()
-
-    // Simulate other status checks
-    setTimeout(() => {
+  // Check Label Studio connection
+  const checkLabelStudio = useCallback(async () => {
+    try {
+      // Try to connect to Label Studio health endpoint or just check if it's accessible
+      const response = await fetch('http://localhost:8090/health/', {
+        method: 'GET',
+        mode: 'no-cors', // Label Studio might not have CORS enabled
+      })
+      
       setStatus(prev => ({
         ...prev,
         labelStudio: {
           status: 'connected',
-          message: 'Label Studio running on :8080'
-        },
+          message: 'Label Studio running on :8090'
+        }
+      }))
+    } catch (error) {
+      console.error('Label Studio connection check failed:', error)
+      setStatus(prev => ({
+        ...prev,
+        labelStudio: {
+          status: 'error',
+          message: 'Label Studio offline'
+        }
+      }))
+    }
+  }, [])
+
+  // Check ClearML connection via webhook server
+  const checkClearML = useCallback(async () => {
+    try {
+      const response = await fetch('http://localhost:8000/health')
+      const data = await response.json()
+      
+      // The webhook server should indicate if ClearML is accessible
+      setStatus(prev => ({
+        ...prev,
         clearml: {
           status: 'connected',
           message: 'Connected to ClearML'
         }
       }))
-    }, 1000)
+    } catch (error) {
+      console.error('ClearML connection check failed:', error)
+      setStatus(prev => ({
+        ...prev,
+        clearml: {
+          status: 'error',
+          message: 'ClearML connection unknown'
+        }
+      }))
+    }
+  }, [])
+
+  useEffect(() => {
+    const websocket = connectWebSocket()
+
+    // Check actual service connections
+    checkLabelStudio()
+    checkClearML()
+
+    // Set up periodic health checks every 30 seconds
+    const healthCheckInterval = setInterval(() => {
+      checkLabelStudio()
+      checkClearML()
+    }, 30000)
 
     return () => {
       if (websocket) {
         websocket.close()
       }
+      clearInterval(healthCheckInterval)
     }
-  }, [connectWebSocket])
+  }, [connectWebSocket, checkLabelStudio, checkClearML])
 
   return (
     <main className="min-h-screen bg-background">
